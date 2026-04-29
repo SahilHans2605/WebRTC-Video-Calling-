@@ -1,0 +1,149 @@
+/* =========================
+   GLOBAL
+========================= */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", sans-serif;
+  background: linear-gradient(135deg, #020617, #0f172a);
+  color: white;
+}
+
+/* =========================
+   PAGE
+========================= */
+
+.vc-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+/* =========================
+   CARD
+========================= */
+
+.vc-card {
+  width: 950px;
+  max-width: 100%;
+  padding: 35px;
+  border-radius: 20px;
+  background: rgba(15, 23, 42, 0.8);
+  backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow:
+    0 0 60px rgba(56, 189, 248, 0.15),
+    0 0 120px rgba(56, 189, 248, 0.05);
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.vc-title {
+  text-align: center;
+  font-size: 28px;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.vc-room {
+  text-align: center;
+  opacity: 0.75;
+  margin-bottom: 35px;
+}
+
+/* =========================
+   CONTROLS
+========================= */
+
+.vc-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 35px;
+}
+
+.vc-btn {
+  padding: 12px 22px;
+  border-radius: 30px;
+  border: none;
+  cursor: pointer;
+  background: #1e293b;
+  color: white;
+  font-size: 14px;
+  transition: all 0.25s ease;
+}
+
+.vc-btn:hover {
+  background: #334155;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(148, 163, 184, 0.25);
+}
+
+.vc-call-btn {
+  background: linear-gradient(135deg, #22c55e, #4ade80);
+  color: #022c22;
+  font-weight: bold;
+}
+
+.vc-call-btn:hover {
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+  box-shadow: 0 0 30px rgba(34, 197, 94, 0.7);
+}
+
+/* =========================
+   VIDEOS
+========================= */
+
+.vc-video-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+}
+
+.vc-video-box {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  background: black;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+}
+
+.vc-label {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  z-index: 2;
+}
+
+.vc-video {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 800px) {
+  .vc-video-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .vc-video {
+    height: 260px;
+  }
+}
