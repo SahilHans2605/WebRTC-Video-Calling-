@@ -94,39 +94,41 @@ const toggleCamera = () => {
   // CONNECT SOCKET
   // =====================
   const connectSocket = () => {
-   socket.current = io();
-    socket.current.emit("join-room", roomId);
+  socket.current = io("https://webrtc-video-calling-application.onrender.com", {
+    transports: ["websocket"]
+  });
 
-    socket.current.on("offer", async (offer) => {
-      await peerConnection.current.setRemoteDescription(offer);
+  socket.current.emit("join-room", roomId);
 
-      const answer = await peerConnection.current.createAnswer();
-      await peerConnection.current.setLocalDescription(answer);
+  socket.current.on("offer", async (offer) => {
+    await peerConnection.current.setRemoteDescription(offer);
 
-      socket.current.emit("answer", {
+    const answer = await peerConnection.current.createAnswer();
+    await peerConnection.current.setLocalDescription(answer);
+
+    socket.current.emit("answer", {
       roomId,
       answer
-      });
-
-      console.log("Answer sent");
     });
 
-    socket.current.on("answer", async (answer) => {
-      await peerConnection.current.setRemoteDescription(answer);
-      console.log("Answer received");
-    });
+    console.log("Answer sent");
+  });
+
+  socket.current.on("answer", async (answer) => {
+    await peerConnection.current.setRemoteDescription(answer);
+    console.log("Answer received");
+  });
 
   socket.current.on("ice-candidate", async ({ candidate }) => {
-  if (candidate) {
-    await peerConnection.current.addIceCandidate(
-      new RTCIceCandidate(candidate)
-    );
-  }
-});
+    if (candidate) {
+      await peerConnection.current.addIceCandidate(
+        new RTCIceCandidate(candidate)
+      );
+    }
+  });
 
-
-    console.log("Socket connected");
-  };
+  console.log("Socket connected");
+};
 
 
   const startCall = async () => {
