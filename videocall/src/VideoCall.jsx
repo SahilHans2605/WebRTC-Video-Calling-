@@ -94,41 +94,40 @@ const toggleCamera = () => {
   // CONNECT SOCKET
   // =====================
   const connectSocket = () => {
-  socket.current = io("https://webrtc-video-calling-application.onrender.com", {
-    transports: ["websocket"]
-  });
+   const signalingUrl = import.meta.env.VITE_SIGNALING_URL || window.location.origin;
+   socket.current = io(signalingUrl);
+    socket.current.emit("join-room", roomId);
 
-  socket.current.emit("join-room", roomId);
+    socket.current.on("offer", async (offer) => {
+      await peerConnection.current.setRemoteDescription(offer);
 
-  socket.current.on("offer", async (offer) => {
-    await peerConnection.current.setRemoteDescription(offer);
+      const answer = await peerConnection.current.createAnswer();
+      await peerConnection.current.setLocalDescription(answer);
 
-    const answer = await peerConnection.current.createAnswer();
-    await peerConnection.current.setLocalDescription(answer);
-
-    socket.current.emit("answer", {
+      socket.current.emit("answer", {
       roomId,
       answer
+      });
+
+      console.log("Answer sent");
     });
 
-    console.log("Answer sent");
-  });
-
-  socket.current.on("answer", async (answer) => {
-    await peerConnection.current.setRemoteDescription(answer);
-    console.log("Answer received");
-  });
+    socket.current.on("answer", async (answer) => {
+      await peerConnection.current.setRemoteDescription(answer);
+      console.log("Answer received");
+    });
 
   socket.current.on("ice-candidate", async ({ candidate }) => {
-    if (candidate) {
-      await peerConnection.current.addIceCandidate(
-        new RTCIceCandidate(candidate)
-      );
-    }
-  });
+  if (candidate) {
+    await peerConnection.current.addIceCandidate(
+      new RTCIceCandidate(candidate)
+    );
+  }
+});
 
-  console.log("Socket connected");
-};
+
+    console.log("Socket connected");
+  };
 
 
   const startCall = async () => {
@@ -164,64 +163,68 @@ const toggleCamera = () => {
   // =====================
   return (
     <div className="vc-page">
-    <div className="vc-card">
-      <h2 className="vc-title">WebRTC Video Call</h2>
-      <p className="vc-room">Room: {roomId}</p>
+      <header className="vc-hero">
+        <h1 className="vc-hero-title">MajorMeet</h1>
+        <p className="vc-hero-subtitle">Crystal-clear meetings, instantly connected.</p>
+        <p className="vc-room">Room: {roomId}</p>
+      </header>
 
-      <div className="vc-controls">
-        <button className="vc-btn" onClick={createPeerConnection}>
-          Create Connection
-        </button>
-
-        <button className="vc-btn" onClick={startCamera}>
-          Start Camera
-        </button>
-
-        <button className="vc-btn" onClick={addTracks}>
-          Add Tracks
-        </button>
-
-        <button className="vc-btn" onClick={connectSocket}>
-          Connect Socket
-        </button>
-
-        <button className="vc-call-btn" onClick={startCall}>
-          📞 Start Call
-        </button>
-      </div>
-
-      <div className="vc-video-grid">
-        <div className="vc-video-box">
-          <p className="vc-label">You</p>
-          <video
-            ref={localVideoRef}
-            autoPlay
-            muted
-            playsInline
-            className="vc-video"
-          />
-          <button className="vc-btn" onClick={toggleMic}>
-          {micOn ? "🎤 Mute" : "🔇 Unmute"}
+      <div className="vc-card">
+        <div className="vc-controls">
+          <button className="vc-btn" onClick={createPeerConnection}>
+            Create Connection
           </button>
 
-          <button className="vc-btn" onClick={toggleCamera}>
-          {cameraOn ? "📷 Camera Off" : "📸 Camera On"}
+          <button className="vc-btn" onClick={startCamera}>
+            Start Camera
           </button>
 
+          <button className="vc-btn" onClick={addTracks}>
+            Add Tracks
+          </button>
+
+          <button className="vc-btn" onClick={connectSocket}>
+            Connect Socket
+          </button>
+
+          <button className="vc-call-btn" onClick={startCall}>
+            📞 Start Call
+          </button>
         </div>
 
-        <div className="vc-video-box">
-          <p className="vc-label">Remote</p>
-          <video
-            ref={remoteVideoRef}
-            autoPlay
-            playsInline
-            className="vc-video"
-          />
+        <div className="vc-video-grid">
+          <div className="vc-video-box">
+            <p className="vc-label">You</p>
+            <video
+              ref={localVideoRef}
+              autoPlay
+              muted
+              playsInline
+              className="vc-video"
+            />
+            <div className="vc-inline-controls">
+              <button className="vc-btn" onClick={toggleMic}>
+                {micOn ? "🎤 Mute" : "🔇 Unmute"}
+              </button>
+
+              <button className="vc-btn" onClick={toggleCamera}>
+                {cameraOn ? "📷 Camera Off" : "📸 Camera On"}
+              </button>
+            </div>
+          </div>
+
+          <div className="vc-video-box">
+            <p className="vc-label">Remote</p>
+            <video
+              ref={remoteVideoRef}
+              autoPlay
+              playsInline
+              className="vc-video"
+            />
+          </div>
         </div>
       </div>
     </div>
-  </div>
   );
 }
 
